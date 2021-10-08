@@ -121,13 +121,12 @@ resource "azurerm_network_interface_security_group_association" "NIC-NSG" {
   network_interface_id      = azurerm_network_interface.nic.id
   network_security_group_id = azurerm_network_security_group.netsecgroup.id
 }
-# SSH key generate
-resource "tls_private_key" "ssh_key" {
-  algorithm = "RSA"
-  rsa_bits  = 4096
-  provisioner "local-exec" {
-    command = "echo '${tls_private_key.ssh_key.private_key_pem}' > ~/azure/key.pem"
-  }
+
+resource "azurerm_ssh_public_key" "example" {
+  name                = "ssh_public_key"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = var.azure_region
+  public_key          = file("~/.ssh/id_rsa.pub")
 }
 # Create VM instance
 resource "azurerm_virtual_machine" "vm" {
@@ -158,7 +157,11 @@ resource "azurerm_virtual_machine" "vm" {
     admin_password = var.admin_password
   }
   os_profile_linux_config {
-    disable_password_authentication = false
+    disable_password_authentication = true
+    ssh_keys {
+        path     = "/home/${var.admin_username}/.ssh/authorized_keys"
+        key_data = file("~/.ssh/id_rsa.pub")
+    }
   }
   tags = {
     environment = var.environment
@@ -168,17 +171,16 @@ resource "azurerm_virtual_machine" "vm" {
       type     = "ssh"
       host     = azurerm_public_ip.publicip.ip_address
       user     = var.admin_username
-      password = var.admin_password
+      private_key  = file("~/.ssh/id_rsa")
       timeout  = "2m"
       agent    = false
     }
     inline = ["echo 'connection via ssh ready'"]
   }
   provisioner "local-exec" {
-    command = "ansible-playbook -i ${azurerm_public_ip.publicip.ip_address}, -u ${var.admin_username} -e ansible_ssh_pass=${var.admin_password} ansible/playbooks/setup.yml"
+    command = "ansible-playbook -i ${azurerm_public_ip.publicip.ip_address}, -u ${var.admin_username} --private-key='~/.ssh/id_rsa' ansible/playbooks/setup.yml"
   }
   provisioner "local-exec" {
-    command = "ansible-playbook -i ${azurerm_public_ip.publicip.ip_address}, -u ${var.admin_username} -e ansible_ssh_pass=${var.admin_password} ansible/playbooks/check.yml"
+    command = "ansible-playbook -i ${azurerm_public_ip.publicip.ip_address}, -u ${var.admin_username} --private-key='~/.ssh/id_rsa' ansible/playbooks/check.yml"
   }
 }
-
