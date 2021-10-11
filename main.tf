@@ -152,7 +152,7 @@ resource "azurerm_virtual_machine" "vm" {
     version   = "latest"
   }
   os_profile {
-    computer_name  = "ubuntu${var.computer_name}"
+    computer_name  = "ubuntu${var.computer_name}-automated"
     admin_username = var.admin_username
     admin_password = var.admin_password
   }
