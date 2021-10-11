@@ -159,8 +159,8 @@ resource "azurerm_virtual_machine" "vm" {
   os_profile_linux_config {
     disable_password_authentication = true
     ssh_keys {
-        path     = "/home/${var.admin_username}/.ssh/authorized_keys"
-        key_data = file("~/.ssh/id_rsa.pub")
+      path     = "/home/${var.admin_username}/.ssh/authorized_keys"
+      key_data = file("~/.ssh/id_rsa.pub")
     }
   }
   tags = {
@@ -168,19 +168,16 @@ resource "azurerm_virtual_machine" "vm" {
   }
   provisioner "remote-exec" {
     connection {
-      type     = "ssh"
-      host     = azurerm_public_ip.publicip.ip_address
-      user     = var.admin_username
-      private_key  = file("~/.ssh/id_rsa")
-      timeout  = "2m"
-      agent    = false
+      type        = "ssh"
+      host        = azurerm_public_ip.publicip.ip_address
+      user        = var.admin_username
+      private_key = file("~/.ssh/id_rsa")
+      timeout     = "2m"
+      agent       = false
     }
     inline = ["echo 'connection via ssh ready'"]
   }
   provisioner "local-exec" {
-    command = "ansible-playbook -i ${azurerm_public_ip.publicip.ip_address}, -u ${var.admin_username} --private-key='~/.ssh/id_rsa' ansible/playbooks/setup.yml"
-  }
-  provisioner "local-exec" {
-    command = "ansible-playbook -i ${azurerm_public_ip.publicip.ip_address}, -u ${var.admin_username} --private-key='~/.ssh/id_rsa' ansible/playbooks/check.yml"
+    command = "ansible-playbook -i ${azurerm_public_ip.publicip.ip_address}, -u ${var.admin_username} --private-key='~/.ssh/id_rsa' ansible/pb.yml"
   }
 }
