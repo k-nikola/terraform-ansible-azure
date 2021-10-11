@@ -26,6 +26,10 @@ jobs:
         id: ip
         uses: haythem/public-ip@v1.2
 
+      # Generate ssh key
+      - name: SSH key
+        run: ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa
+
       # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
