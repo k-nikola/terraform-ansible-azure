@@ -36,7 +36,7 @@ jobs:
         with:
           cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
-      # Login to azure
+      # Login to azure (contributor role)
       - name: Azure Login
         uses: azure/login@v1
         with:
