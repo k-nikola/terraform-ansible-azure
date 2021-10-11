@@ -1,0 +1,35 @@
+---
+- name: install pip3
+  apt: name=python3-pip
+
+- name: ensure docker is at the latest version
+  apt: name=docker.io state=latest
+
+- name: Install docker with pip
+  shell: |
+    pip3 install docker
+
+- name: Check if docker image exists on the server
+  docker_image_info:
+    name: t0b9/tf-site:latest
+  register: result
+
+- name: Pull the image if it's not present
+  shell: |
+    docker pull t0b9/tf-site:latest
+  when: result.images | length == 0
+
+- name: Serch for existing docker container
+  docker_container_info:
+    name: tf-site-container
+  register: result2
+
+- name: Create and run the container if it doesn't exist
+  shell: |
+    docker run -d -p 80:80 --name 'tf-site-container' t0b9/tf-site:latest
+  when: result2.exists == false
+
+- name: Start the container if it exists
+  shell: |
+    docker start tf-site-container
+  when: result2.exists

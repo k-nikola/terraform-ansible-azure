@@ -1,0 +1,12 @@
+---
+- hosts: all
+  become: true
+  pre_tasks:
+    - apt:
+        update_cache: yes
+        upgrade: yes
+
+- hosts: all
+  become: true
+  roles:
+    - web
