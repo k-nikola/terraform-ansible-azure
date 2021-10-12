@@ -7,7 +7,7 @@
 
 - name: Install docker with pip
   shell: |
-    pip install docker
+    pip3 install docker
 
 - name: Check if docker image exists on the server
   docker_image_info:
