@@ -130,7 +130,7 @@ resource "azurerm_ssh_public_key" "example" {
 }
 # Create VM instance
 resource "azurerm_virtual_machine" "vm" {
-  name                  = "ubuntu_vm"
+  name                  = "ubuntu_vm2"
   location              = var.azure_region
   resource_group_name   = azurerm_resource_group.rg.name
   vm_size               = "Standard_B2s"
@@ -152,7 +152,7 @@ resource "azurerm_virtual_machine" "vm" {
     version   = "latest"
   }
   os_profile {
-    computer_name  = "ubuntu${var.computer_name}-automated"
+    computer_name  = "ubuntu${var.computer_name}"
     admin_username = var.admin_username
     admin_password = var.admin_password
   }
