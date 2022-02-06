@@ -29,7 +29,7 @@ variable "computer_name" {
   default = "tf"
 }
 variable "network_security_group_name" {
-  default = "myNetSecGroup"
+  default = "myNetSecGrp"
 }
 variable "admin_username" {
   description = "Username for logging into the VM as admin"
